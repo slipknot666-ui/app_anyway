@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'screens/inventory_screen.dart'; 
+import 'package:provider/provider.dart';
+import 'providers/inventory_provider.dart';
+import 'router/app_router.dart';
+import 'theme/app_theme.dart';
 
 void main() {
   runApp(const StockMasterApp());
@@ -10,41 +13,24 @@ class StockMasterApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'StockMaster Desktop',
-      debugShowCheckedModeBanner: false,
-      
-      // TEMA CORPORATIVO
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF0D47A1), // Azul profundo profesional
-          brightness: Brightness.light,
-        ),
-        // Estilo de tarjetas
-        cardTheme: const CardThemeData(
-          elevation: 3,
-          surfaceTintColor: Colors.white,
-          margin: EdgeInsets.zero,
-        ),
-        // Estilo de Inputs (Formularios)
-        inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-          filled: true,
-          fillColor: Colors.white,
-          isDense: true,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-        ),
-        // Estilo de botones
-        filledButtonTheme: FilledButtonThemeData(
-          style: FilledButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          ),
-        ),
+    // 1. Inyectamos el Provider en la cima del árbol
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => InventoryProvider()),
+      ],
+      // 2. Usamos MaterialApp.router
+      child: MaterialApp.router(
+        title: 'Inventario 360',
+        debugShowCheckedModeBanner: false,
+        
+        // Conexión del Router
+        routerConfig: appRouter,
+        
+        // Conexión de los Temas (Claro y Oscuro)
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: ThemeMode.system, // Usa la config de Windows (Claro/Oscuro)
       ),
-      
-      home: const InventoryScreen(),
     );
   }
 }

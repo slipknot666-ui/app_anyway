@@ -2,25 +2,42 @@ import 'package:flutter/material.dart';
 import '../models/product_model.dart';
 
 class InventoryProvider extends ChangeNotifier {
-  // Lista privada para proteger los datos
+  // Lista privada
   final List<Product> _products = [];
 
-  // Getter público (solo lectura)
+  // Getter público
   List<Product> get products => _products;
 
-  // Acción: Agregar Producto
+  // 1. Agregar (Ya lo tenías)
   void addProduct(Product product) {
     _products.add(product);
-    // ¡Avisar a todos los widgets que escuchen que hubo un cambio!
     notifyListeners(); 
   }
 
-  // Validación: Comprobar si existe el SKU
+  // 2. NUEVO: Buscar producto por SKU (Para cargar el formulario de edición)
+  Product? getProductBySku(String sku) {
+    try {
+      return _products.firstWhere((p) => p.sku == sku);
+    } catch (e) {
+      return null; // No existe
+    }
+  }
+
+  // 3. NUEVO: Actualizar producto existente
+  void updateProduct(Product updatedProduct) {
+    final index = _products.indexWhere((p) => p.sku == updatedProduct.sku);
+    if (index != -1) {
+      _products[index] = updatedProduct;
+      notifyListeners(); // ¡Avisar a la pantalla que se redibuje!
+    }
+  }
+
+  // Validación
   bool existsSku(String sku) {
     return _products.any((p) => p.sku == sku);
   }
 
-  // Métricas: Calcular ganancia total (Opcional, pero útil para dashboard)
+  // Métricas
   double get totalPotentialProfit {
     double total = 0;
     for (var p in _products) {
